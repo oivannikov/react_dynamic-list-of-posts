@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import './NewCommentForm.scss';
 import { getPostComments, addComment } from '../../api/comments';
+import { useDispatch, useSelector } from 'react-redux';
+import { getComments } from '../../redux/actions';
 
-export const NewCommentForm = ({ setComments, postId}) => {
+export const NewCommentForm = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [body, setBody] = useState('');
+  const postId = useSelector(state => state.posts.postId);
+  const dispatch = useDispatch();
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -13,13 +17,13 @@ export const NewCommentForm = ({ setComments, postId}) => {
     if (name && email && body) {
       addComment(name, email, body, postId)
         .then(() => getPostComments(postId)
-          .then(setComments));
+          .then((comments) => dispatch(getComments(comments))));
 
       setName('');
       setEmail('');
       setBody('');
     }
-  }
+  };
 
   return (
     <form

@@ -1,20 +1,23 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
+
 import './PostsList.scss';
 
+import { useDispatch, useSelector } from 'react-redux';
+import { commentsCurrentUser, currentUserDetails } from '../../redux/actions';
+
 export const PostsList = ({
-  posts,
   viewPostUser,
-  setPostDetails,
-  postId,
-  setPostId
 }) => {
+  const posts = useSelector(state => state.posts.posts);
+  const postId = useSelector(state => state.posts.postId);
+  const dispatch = useDispatch();
+
   function handleClick(id) {
     if (postId === id) {
-      setPostId(0);
-      setPostDetails([]);
+      dispatch(commentsCurrentUser(0));
+      dispatch(currentUserDetails([]));
     } else {
-      setPostId(id);
+      dispatch(commentsCurrentUser(id));
       viewPostUser(id);
     }
   }
@@ -50,16 +53,4 @@ export const PostsList = ({
       </ul>
     </div>
   );
-};
-
-PostsList.propTypes = {
-  posts: PropTypes.arrayOf(PropTypes.shape({
-    userId: PropTypes.number.isRequired,
-    title: PropTypes.string.isRequired,
-    id: PropTypes.number.isRequired,
-  })).isRequired,
-  viewPostUser: PropTypes.func.isRequired,
-  postId: PropTypes.number.isRequired,
-  setPostId: PropTypes.func.isRequired,
-  setPostDetails: PropTypes.func.isRequired,
 };

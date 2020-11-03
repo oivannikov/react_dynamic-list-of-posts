@@ -1,5 +1,13 @@
 import { BASE_URL } from './api';
 
+export async function getAllPosts() {
+  const responce = await fetch(`${BASE_URL}/posts`);
+  const result = await responce.json();
+  const posts = await result.data;
+
+  return posts;
+}
+
 export async function selectedPostId(userId) {
   const responce = await fetch(`${BASE_URL}/posts`);
   const result = await responce.json();

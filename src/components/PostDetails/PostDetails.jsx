@@ -1,18 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import './PostDetails.scss';
-import PropTypes from 'prop-types';
 
 import { NewCommentForm } from '../NewCommentForm';
 import { getPostComments, deleteComment } from '../../api/comments';
 
-export const PostDetails = ({ postDetails, postId }) => {
-  const { title, body, id } = postDetails;
-  const [comments, setComments] = useState([]);
+import { useDispatch, useSelector } from 'react-redux';
+import { getComments } from '../../redux/actions';
+
+import './PostDetails.scss';
+
+export const PostDetails = () => {
+  const currentDetails = useSelector(state => state.posts.currentDetails);
+  const postId = useSelector(state => state.posts.postId);
+  const comments = useSelector(state => state.comments.comments);
+  const dispatch = useDispatch();
+
+  const { title, body, id } = currentDetails;
   const [hideComent, setHideComment] = useState(true);
 
   useEffect(() => {
     getPostComments(postId)
-      .then(comments => setComments(comments));
+      .then(comments => dispatch(getComments(comments)));
   }, [comments]);
 
   function habdleButton() {
@@ -65,22 +72,11 @@ export const PostDetails = ({ postDetails, postId }) => {
 
           <section>
             <div className="PostDetails__form-wrapper">
-              <NewCommentForm
-                setComments={setComments}
-                postId={postId}
-              />
+              <NewCommentForm />
             </div>
           </section>
         </>
       )}
     </div>
   );
-};
-
-PostDetails.propTypes = {
-  postDetails: PropTypes.arrayOf(PropTypes.shape({
-    body: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    id: PropTypes.number.isRequired,
-  })).isRequired,
 };

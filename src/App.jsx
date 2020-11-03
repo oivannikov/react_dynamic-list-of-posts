@@ -5,23 +5,30 @@ import './styles/general.scss';
 
 import { PostsList } from './components/PostsList';
 import { PostDetails } from './components/PostDetails';
-import { selectedPostId, getPostDetails } from './api/posts';
+
+import { currentUserDetails, getPosts } from './redux/actions';
+import { useDispatch } from 'react-redux';
+
+import { selectedPostId, getPostDetails, getAllPosts } from './api/posts';
 
 const App = () => {
-  const [posts, setPosts] = useState([]);
+  const dispatch = useDispatch();
   const [selectedUser, setSelectedUser] = useState(0);
-  const [postDetails, setPostDetails] = useState([]);
-  const [postId, setPostId] = useState(0);
+
+  useEffect(() => {
+    getAllPosts()
+      .then(posts => dispatch(getPosts(posts)));
+  }, []);
 
   useEffect(() => {
     selectedPostId(selectedUser)
-      .then(setPosts);
+      .then(posts => dispatch(getPosts(posts)));
   }, [selectedUser]);
 
   async function viewPostUser(id) {
-    const result = await getPostDetails(id);
+    const currentDetails = await getPostDetails(id);
 
-    setPostDetails(() => result);
+    dispatch(currentUserDetails(currentDetails));
   }
 
   return (
@@ -51,22 +58,11 @@ const App = () => {
 
       <main className="App__main">
         <div className="App__sidebar">
-          <PostsList
-            viewPostUser={viewPostUser}
-            posts={posts}
-            postDetails={postDetails}
-            selectedUser={selectedUser}
-            setPostDetails={setPostDetails}
-            postId={postId}
-            setPostId={setPostId}
-          />
+          <PostsList viewPostUser={viewPostUser} />
         </div>
 
         <div className="App__content">
-          <PostDetails
-            postDetails={postDetails}
-            postId={postId}
-          />
+          <PostDetails />
         </div>
       </main>
     </div>
